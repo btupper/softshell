@@ -1,0 +1,144 @@
+---
+title: Softshell Abunbdance Survey
+output: html_document
+always_allow_html: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(softshell)
+library(knitr)
+library(tidyverse)
+library(patchwork)
+x <- softshell::import_csv_report()
+```
+
+# Survey Background
+
+A description of the abundance analyses performed with softshell clam survey data.  This case study from 2019 yielded 41 sample plots (1'x 2') spaced at 50' intervals. The survey was conducted by 4 volunteers.  At each sample location a 1' x 2' sample plot was excavated, and all softshell clams were identified, classified into on of the 19 5mm size classes, and counted.  At each station one volunteer dug and collected clams while another volunteer recorded plot location and the counts and sizes on a standard form.
+
+```{r, echo=FALSE, out.width="49%",  out.height="20%", fig.cap="caption", fig.show='hold', fig.align='center', fig.cap = "sample locations and example datasheet", out.extra='style="padding:10px; display: inline-block;"'}
+knitr::include_graphics(c("softshell-map.png","softshell-datasheet.jpg"))
+``` 
+
+
+### Area per sample and total survey area
+
+Samples are collected at 50'intervals which assumes that each plot is representative of a 50' x 50' area with the sample at the center. 
+
+```
+area_per_sample = (interval_in_feet * interval_in_feet) / (sq_feet_per_acre)
+
+# for 50' intervals ...
+
+area_per_sample = (50 * 50) / 43500 = 0.0575 area (acres) per sample
+```
+
+The total area surveyed is the simple sum of these sample areas.
+
+```
+area_study = area_per_sample * number_of_samples
+
+area_study = 0.0575 acres/sample * 41 samples = 2.36 acres
+```
+
+### Size classes
+
+Size classes start at 10mm (long dimension of clam) and increment by 5mm.  Clams at or greater than 100mm are pooled into a '100+' size class.  Legally sized clams are at least 50.8 mm (or 2").  For the purposes of the report, legal sizes are rounded to 50mm and greater.
+
+Clams smaller than 10mm are considered spat, but no standard was used to count spat so it is common to see reports of "yes", "some", "lots".  For the purposes of the report spat are ignored.
+
+Counts per size class across all of the sample plots are pooled to create a histogram of counts or fraction of counts.
+
+```{r bin-histograms, echo = FALSE, fig.align='center'}
+print(softshell::plot_bins(x, what = c("counts", "fraction")))
+```
+
+### Density (abundance) by size class
+
+Density (abundance) by size class is an estimate of bushels of clams per unit of area.  It is in this step that we convert the `count` of clams per size class into an estimated `volume` of clams per size class in bushels. Keep in mind this was probably derived empirically by filling a known volume with known numbers of clams of each size class.
+
+```{r volume-conversion, echo = FALSE, fig.align = "center"}
+softshell::plot_volume_factor()
+```
+
+Clams in the 50-55 mm size class have a scaling factor of about 14.7.  Clams in the 100+ mm size class have a scaling factor of 111.  So a 100+ sized clam occupies on average (111/14.7 = ) 7.4 times more volume than the small clam.
+
+Using this conversion factor, the density of clams per size class per acre can be estimated.  Below are three examples.
+
+```
+density_per_class = count_per_class / number_of_plots * volume_factor
+                  = average_number_of_clams_per_plot  * volume_factor
+
+# for 25-30 mm size class
+density_per_class = 8 / 41  * 3.08 = 0.6 bushels/acre
+
+# for 50-55 mm size class
+density_per_class = 117 / 41 * 14.7 = 41.92 bushels/acre
+
+# for 100+ mm size class
+density_per_class = 0 / 41 * 111 = 0 bushels/acre
+```
+
+We can show this in a histogram, where instead column height representing counts they represent crop density (bushels per acre).  We can see that for this region the bulk of the crop is legal size.
+
+```{r crop-density, echo = FALSE, fig.align = 'center'}
+area <- 2.36
+x$bins <- x$bins %>%
+    dplyr::mutate(density = softshell::compute_crop_by_class(x),
+                  crop = density * area)
+
+print(softshell::plot_bins(x, what = c("density"), title = 'Crop Density'))
+```
+
+### Estimated available crop by size class
+
+Once the density (abundance) per size class is know, the estimated crop per size class can be computed by multiplying by the total study area.
+
+```
+available_crop_per_class = density_per_class * total_area
+
+# for 25-30 mm size class
+available_crop_per_class = 0.6 bushels/acre * 2.36 acres = 1.44 bushels
+
+# for 50-55 mm size class
+available_crop_per_class = 41.92 bushels/acre * 2.36 acres = 100.6 bushels
+
+# for 100+ mm size class
+available_crop_per_class = 0 bushels/acre * 2.36 acres = 0 bushels
+```
+No surprise here that the legal sizes produce the greatest total crop at this survey site at this time.
+
+```{r crop, echo = FALSE, fig.align = 'center'}
+print(softshell::plot_bins(x, what = c("crop"), title = 'Estimated Crop'))
+```
+
+### Total Crop
+
+The total available crop within the study area is the simple sum of the crop available at each size class
+
+```
+sum_of_all_classes = 546 bu
+sum_of_legal_classes = 483 bu
+sum_of_illegal_classes = 63 bu
+```
+
+### Projected harvestable crop
+
+By making some assumptions about the rate at which clams successfully move from smaller to larger class sizes, it is possible to make an educated guess for the available crop sometime in the relatively near future. The formula simply adds the legal crop to a fraction of the illegal crop. There are assumptions to consider about softshell survival, degree and efficiency of effort, etc., but all things be equal this could provide a benchmark for management.
+
+```
+projected_harvest = (crop - crop_legal) * 0.4 + crop_legal = 
+                  = crop_illegal * 0.4        + crop_legal = 
+                  = (546 - 483) * 0.4 + 546
+                  = 508 bu
+```
+
+### Abundance vs Crop
+
+*Abundance* is estimated density of shellfish `bushels of clams per acre`. 
+
+*Crop* is the estimated total volume of shellfish in study area `bushels of clams`.  Note that it is the projected crop within the study area *only*.
+
+Of the two, only *abundance* is useful comparing two or more studies (unless you sample the exact same area each time.)
+
