@@ -18,7 +18,7 @@ export_template <- function(filename = "softshell_template.xls"){
 #' @export
 #' @param filename syring, the filename (including path) to save the example to.
 #' @return logical (invisibly) with TRUE meaning success
-export_template <- function(filename = "softshell_example.xls"){
+export_example <- function(filename = "softshell_example.xls"){
   
   ok <- file.copy(system.file("examples/softshell-example.xls", package = "softshell"),
                   filename,
@@ -50,7 +50,7 @@ volume_factor <- function(){
 #' @return ggplot2 plot object
 plot_volume_factor <- function(x = volume_factor()){
   
-  ggplot(data = x, ggplot2::aes(x = size, y = factor)) + 
+  ggplot2::ggplot(data = x, ggplot2::aes(x = .data$size, y = .data$factor)) + 
     ggplot2::geom_point() + 
     ggplot2::labs(title = "Size class to volume fraction", 
                   x= "Size Class (mm)", 

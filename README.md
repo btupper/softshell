@@ -43,14 +43,37 @@ export_example(filename = "the_example.xls")
 
 ### Import an Excel Report
 
-Once you have completed the survey and transfered the metadata, plot locations and counts to the template, you can save it as either a `.xls` or `.xlsx` Excel spreadsheet file. Any spreadsheet will work, such as Google Sheets, Apple Numbers, etc. as long as it permits export to Microsoft Excel format.Barring unexpected issues, you can easily import this into R using the `import_report_xls(filename)` function.  For this example, we can use the exported example from above.
+Once you have completed the survey and transfered the metadata, plot locations and counts to the template, you can save it as either a `.xls` or `.xlsx` Excel spreadsheet file. Any spreadsheet will work, such as Google Sheets, Apple Numbers, etc. as long as it permits export to Microsoft Excel format.Barring unexpected issues, you can easily import this into R using the `import_report_xls(filename)` function.  For this example, we can use the exported example from above.  We show how to read the file and then print it (by typing its variable name.)  Printing shows a very simply summary of the survey object.
 
 ```
 survey <- import_report_xls("the_example.xls")
-names(survey)
+survey
+# Softshell Survey data: 2019-09-22, East Gish, Old Man Cove 
+# N plots: 41, Area: 2.4 acres 
+# Abundance: 227.1 bushels per acre 
+# Legally sized abundance, 201.2 bushels per acre 
 ```
 
+### Plot an abundance report
 
+We can easily plot the survey results (without spats) as an abundance histogram (bushel per acre for each size class).
+
+```
+plot(survey)
+```
+
+![abundance histogram](inst/softshell-abundance-plot.png)
+
+
+### Map plot locations
+
+We can also draw a map of the plot locations.
+
+```
+draw_map(survey)
+```
+
+![map](inst/softshell-map.png)
 
 
 

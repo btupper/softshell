@@ -1,30 +1,41 @@
+#' Draw map of the provided object
+#' @export
+#' @param x an object to map
+draw_map <- function(x) UseMethod("draw_map")
+
+#' Draw map of the provided object
+#' @method draw_map default 
+#' @export
+#' @param x an object to map
+draw_map.default <- function(x){
+  if (!inherits(x, 'SSCS')) warning("no known draw_map method for ", paste(class(x), collapse = ", "))
+}
+
 #' Create a leaflet map with radius-scaled circle markers
 #'
+#' @method draw_map SSCS 
 #' @export
 #' @param x list of softshell data elements
 #' @param scale_by character name of the varible used to scale the plot symbols by radius
 #' @param provider character the tile provder for base map
 #' @return leaflet object
-map_sscs <- function(x, 
-                     scale_by = c("abundance", "identity")[3], 
+draw_map.SSCS <- function(x, 
+                     scale_by = c("abundance", "identity", "legal_abundance")[2], 
                      provider = c("Esri.WorldImagery", "OpenStreetMap.Mapnik")[1]){
 
-  if (is.null(x$plots)) stop("input must have 'plots' element")
-  
+  threshold <- 50
   if (scale_by[1] == 'identity'){
     xyz <- x$plots %>%
       dplyr::mutate(size = 1)
   } else {
-    if (is.null(x$counts)) stop("input must have abund element to plot abundance")
-    
-    if (scale_by[1] == "fraction") {
-      threshold <- 0  # dump spats
+    if (grepl("legal", scale_by[1], fixed = TRUE)){
+      m <- colSums(as.matrix(x$abund %>% 
+                             dplyr::filter(.data$size > threshold) %>% 
+                             dplyr::select(-.data$size)), na.rm = TRUE)
     } else {
-      threshold <- 49 # dump illegals
+      m <- colSums(as.matrix(x$abund %>% 
+                             dplyr::select(-.data$size)), na.rm = TRUE)
     }
-    m <- colSums(as.matrix(x$counts %>% 
-                             dplyr::filter(size > threshold) %>% 
-                             dplyr::select(-size)), na.rm = TRUE)
     m <- m/(sum(m, na.rm = TRUE))
     
     xyz <- x$plots %>%
@@ -32,20 +43,20 @@ map_sscs <- function(x,
   }
   
   if (scale_by[1] == 'identity'){
-    r <- 1
+    r <- 10
     col <- "orange"
   } else {
-    r <- range(xyz$size)
-    r <- unname( (xyz$size + - r[1])/(r[2]-r[1]) )
-    col <- ifelse(r == 0, "black", "orange")
+    bottom <- 10
+    r <- c(0, max(xyz$size, na.rm = TRUE))
+    r <- unname( (xyz$size - r[1])/(r[2]-r[1]) ) * 10 + bottom
+    col <- ifelse(r <= bottom, "black", "orange")
   }
+  
   leaflet::leaflet(xyz) %>%
-    #leaflet::addTiles() %>%
     leaflet::addProviderTiles(leaflet::providers[[provider]]) %>%
     leaflet::addCircleMarkers(lng = ~lon, lat = ~lat, 
-                              radius = r * 10 + 2,
+                              radius = r,
                               color = col,
                               fillColor = col,
                               opacity = 0.7)
-  
 }

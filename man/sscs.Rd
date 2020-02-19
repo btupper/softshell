@@ -16,7 +16,7 @@ SSCS(x = import_report_xls())
 }}
 }
 \value{
-a sscs class object which is a list of 5 elements.  The three inputs
+a SSCS class object which is a list of 5 elements.  The three inputs
   (with meta slightly augmented) and an additional abund element which is the 
   counts data frame transformed into abundance (bushels per acre).
 }

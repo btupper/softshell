@@ -28,14 +28,12 @@ import_report_xls <- function(
   filename = system.file("examples/softshell-example.xls", package = "softshell"),
   sheet = 1){
   
-  z <- suppressMessages(readxl::read_excel(filename, sheet = sheet))
+  z <- suppressMessages(readxl::read_excel(filename, sheet = sheet, col_names = FALSE))
   m <- as.matrix(z)
   N <- nrow(m)
   x <- (z %>% dplyr::select(1))[[1]]
-  ix <- c("[survey]" = 1,
-          sapply(c("[plots]","[counts]"),
+  ix <- sapply(c("[survey]", "[plots]","[counts]"),
                function(flag) grep(flag, x, fixed = TRUE))
-          )
   isurvey <- seq(from = ix[1]+1, to = ix[2]-1, by = 1)
   meta <- as.list((z %>% dplyr::select(2))[[1]][isurvey])
   names(meta) <- as.list(x[isurvey])
@@ -62,13 +60,14 @@ import_report_xls <- function(
   for (n in as_num) if (n %in% names(meta)) meta[[n]] <- as.numeric(meta[[n]])
   
   plots <- suppressMessages(readxl::read_excel(filename,
-                                               range = cellranger::cell_rows(c(ix[2]+2,ix[3])),
-                                               col_names = TRUE,
+                                               range = cellranger::cell_rows(c(ix[2]+1,ix[3]-1)),
+                                               col_names = FALSE,
                                                sheet = sheet))
   plots <- t(as.matrix(plots))
-  plots <- dplyr::tibble(station = rownames(plots)[-1],
-                         lat = as.numeric(plots[-1,1]),
-                         lon = as.numeric(plots[-1,2]))
+  plots <- dplyr::tibble(station = unname(plots[-1,1]),
+                         lon = as.numeric(unname(plots[-1,3])), 
+                         lat = as.numeric(unname(plots[-1,2]))
+                         )
   
   meta[['area']] <- (meta$plot_interval[1] * meta$plot_interval[2]) / 43500 * meta$plot_count
   
@@ -78,11 +77,11 @@ import_report_xls <- function(
                                                 col_types = "numeric",
                                                 sheet = sheet))
   spat <- counts %>% 
-    dplyr::filter(size <= 0)
+    dplyr::filter(.data$size <= 0)
   counts <- counts %>% 
-    dplyr::filter(size > 0)
+    dplyr::filter(.data$size > 0)
   
-  x <- sscs(x = list(meta = meta, plots = plots, spat = spat, counts = counts))
+  x <- SSCS(x = list(meta = meta, plots = plots, spat = spat, counts = counts))
   x
 }
 
