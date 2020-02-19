@@ -62,7 +62,7 @@ We can easily plot the survey results (without spats) as an abundance histogram 
 plot(survey)
 ```
 
-![abundance histogram](inst/softshell-abundance-plot.png)
+![abundance histogram](inst/images/softshell-abundance-plot.png)
 
 
 ### Map plot locations
@@ -73,7 +73,7 @@ We can also draw a map of the plot locations.
 draw_map(survey)
 ```
 
-![map](inst/softshell-map.png)
+![map](inst/images/softshell-map.png)
 
 
 
