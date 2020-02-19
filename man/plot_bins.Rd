@@ -4,12 +4,10 @@
 \alias{plot_bins}
 \title{Plot softshell bins as a histogram}
 \usage{
-plot_bins(x = read_sscs(), what = c("counts", "fraction")[2], title = NULL)
+plot_bins(x = SSCS(), title = NULL)
 }
 \arguments{
 \item{x}{a SSCS object}
-
-\item{what}{character the name of the parameter to plot ('count' or 'fraction')}
 
 \item{title}{either NULL or character.  If NULL the title is generated automatically}
 }

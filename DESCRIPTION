@@ -1,6 +1,6 @@
 Package: softshell
 Title: Soft Shell Clam Survey Data from Maine Department of Marine Resources
-Description: Maine Department of Marine Resources DMR (<https://www.maine.gov/dmr/>) publishes reports on soft shell clam surveys.  Methods provide access to example data from Yarmouth, Maine (<https://yarmouth.me.us>), as well as plotting and mapping tools.
+Description: Maine Department of Marine Resources DMR (https://www.maine.gov/dmr/) publishes reports on soft shell clam surveys. This package augments that to provide more local control of data management. Methods provide access to example data from 2019 survey, as well as plotting and mapping tools.
 Version: 0.1.0
 Depends:
     R (>= 3.0)
@@ -22,8 +22,8 @@ Encoding: UTF-8
 Authors@R: c(
       person("Ben", "Tupper", email = "btupper@bigelow.org", role = c("aut", "cre"))
     )
-URL: https://github.com/BigelowLab/softshell
-BugReports: https://github.com/BigelowLab/softshell
+URL: https://github.com/btupper/softshell
+BugReports: https://github.com/btupper/softshell
 License: MIT + file LICENSE
 LazyData: true
 RoxygenNote: 7.0.2

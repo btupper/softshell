@@ -2,11 +2,9 @@
 #' 
 #' @export
 #' @param x a SSCS object
-#' @param what character the name of the parameter to plot ('count' or 'fraction')
 #' @param title either NULL or character.  If NULL the title is generated automatically
 #' @return ggplot object
-plot_bins <- function(x = read_sscs(), 
-                      what = c("counts", "fraction")[2],
+plot_bins <- function(x = SSCS(), 
                       title = NULL){
   
   

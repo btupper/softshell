@@ -1,3 +1,33 @@
+#' Export the template
+#' 
+#' @export
+#' @param filename syring, the filename (including path) to save the template to.
+#' @return logical (invisibly) with TRUE meaning success
+export_template <- function(filename = "softshell_template.xls"){
+  
+  ok <- file.copy(system.file("examples/softshell-template.xls", package = "softshell"),
+                  filename,
+                  overwrite = TRUE, 
+                  recursive = TRUE)
+  invisible(ok)
+}
+
+
+#' Export the example
+#' 
+#' @export
+#' @param filename syring, the filename (including path) to save the example to.
+#' @return logical (invisibly) with TRUE meaning success
+export_template <- function(filename = "softshell_example.xls"){
+  
+  ok <- file.copy(system.file("examples/softshell-example.xls", package = "softshell"),
+                  filename,
+                  overwrite = TRUE, 
+                  recursive = TRUE)
+  invisible(ok)
+}
+
+
 #' Retrieve the volume factor by size class
 #' 
 #' @export
