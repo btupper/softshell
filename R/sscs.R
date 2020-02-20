@@ -53,11 +53,12 @@ print.SSCS <- function(x){
   cat(sprintf("Softshell Survey data: %s, %s, %s", 
               format(x$meta$date, "%Y-%m-%d"),
               x$meta$town, x$meta$site), "\n")
-  cat(sprintf("N plots: %i, Area: %0.1f acres", 
-              x$meta$plot_count, x$meta$area), "\n")
+  cat(sprintf("N plots: %i, Plot intervals: %i' x %i', Area: %0.1f acres", 
+              x$meta$plot_count, x$meta$plot_interval[1],
+              x$meta$plot_interval[2], x$meta$area), "\n")
   cat(sprintf("Abundance: %0.1f bushels per acre", 
               x$meta$abundance), "\n")
-  cat(sprintf("Legally sized abundance, %0.1f bushels per acre", 
+  cat(sprintf("Legally sized abundance (> 50mm), %0.1f bushels per acre", 
               x$meta$legal_abundance), "\n")
 }
 

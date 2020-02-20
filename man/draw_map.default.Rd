@@ -6,6 +6,9 @@
 \usage{
 \method{draw_map}{default}(x)
 }
+\arguments{
+\item{x}{an object to map}
+}
 \description{
 Draw map of the provided object
 }
